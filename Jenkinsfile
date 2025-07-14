@@ -2,10 +2,10 @@ pipeline {
     agent any
 
     environment {
-        REGISTRY = credentials('docker-registry-url')         // e.g., localhost:5000
-        IMAGE_NAME = credentials('docker-image-name')         // e.g., hello-node-app
-        IMAGE_TAG = credentials('docker-image-tag')           // e.g., latest
-        APP_PORT = credentials('docker-app-port')             // e.g., 3000
+        REGISTRY = credentials('docker-registry-url')
+        IMAGE_NAME = credentials('docker-image-name')
+        IMAGE_TAG = credentials('docker-image-tag')
+        APP_PORT = credentials('docker-app-port')
     }
 
     options {
@@ -14,12 +14,6 @@ pipeline {
     }
 
     stages {
-        stage('Clone Repository') {
-            steps {
-                git url: 'https://github.com/MostafaSadab/node-express-hello-devfile-no-dockerfile.git', branch: 'main'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 script {
