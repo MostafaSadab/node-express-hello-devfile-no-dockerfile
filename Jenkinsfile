@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        // Use Jenkins credentials for secure configuration
         REGISTRY = credentials('docker-registry-url')         // e.g., localhost:5000
         IMAGE_NAME = credentials('docker-image-name')         // e.g., hello-node-app
         IMAGE_TAG = credentials('docker-image-tag')           // e.g., latest
@@ -24,8 +23,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    echo "Building image ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
-                    dockerImage = docker.build("${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}")
+                    sh "docker build -t ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} ."
                 }
             }
         }
@@ -33,10 +31,7 @@ pipeline {
         stage('Push to Local Docker Registry') {
             steps {
                 script {
-                    echo "Pushing image to ${REGISTRY}"
-                    docker.withRegistry("http://${REGISTRY}") {
-                        dockerImage.push()
-                    }
+                    sh "docker push ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
                 }
             }
         }
@@ -44,8 +39,6 @@ pipeline {
         stage('Run and Verify Image') {
             steps {
                 script {
-                    echo "Running container from ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
-                    
                     sh """
                         docker rm -f test-run || true
                         docker pull ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
